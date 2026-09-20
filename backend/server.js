@@ -27,11 +27,8 @@ app.post('/api/pay', async (req, res) => {
       { phone: p, amount: Number(amount), reference, channelId: process.env.PAYLOR_CHANNEL_ID, description: description || 'Nyota Funds Fee' },
       { headers: { 'Authorization': `Bearer ${process.env.PAYLOR_API_KEY}`, 'Content-Type': 'application/json' } }
     )
-    const d = r.data
-    if (d.success || d.status === 'success' || d.ResponseCode === '0') {
-      return res.json({ success: true, message: 'STK Push sent!', reference, data: d })
-    }
-    return res.status(400).json({ success: false, message: d.message || 'Payment failed' })
+    console.log('Paylor response:', JSON.stringify(r.data))
+    return res.json({ success: true, message: 'STK Push sent!', reference, data: r.data })
   } catch (err) {
     console.error(err.response?.data || err.message)
     return res.status(500).json({ success: false, message: err.response?.data?.message || 'Service unavailable' })

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { CheckCircle, ChevronRight, ChevronLeft, AlertCircle, Phone, Loader2, Star } from 'lucide-react'
 import { COUNTIES, OCCUPATIONS, GRANT_TIERS } from '../data'
 import axios from 'axios'
@@ -27,6 +27,38 @@ function StepIndicator({ current }) {
   )
 }
 
+const InputField = ({ label, name, type = 'text', placeholder = '', value, onChange, error }) => (
+  <div>
+    <label className="text-sm text-gray-300 font-medium mb-1.5 block">{label}</label>
+    <input
+      type={type}
+      value={value}
+      onChange={e => onChange(name, e.target.value)}
+      placeholder={placeholder}
+      className={`input-field ${error ? 'border-red-500/60' : ''}`}
+    />
+    {error && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12}/>{error}</p>}
+  </div>
+)
+
+const SelectField = ({ label, name, options, value, onChange, error }) => (
+  <div className="relative">
+    <label className="text-sm text-gray-300 font-medium mb-1.5 block">{label}</label>
+    <div className="relative">
+      <select
+        value={value}
+        onChange={e => onChange(name, e.target.value)}
+        className={`select-field pr-10 ${error ? 'border-red-500/60' : ''} ${!value ? 'text-gray-500' : 'text-white'}`}
+      >
+        <option value="" disabled>Select...</option>
+        {options.map(o => <option key={o} value={o} className="bg-night-800 text-white">{o}</option>)}
+      </select>
+      <ChevronRight size={14} className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-gray-500 pointer-events-none" />
+    </div>
+    {error && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12}/>{error}</p>}
+  </div>
+)
+
 function Step1({ data, onChange, onNext }) {
   const [agreed, setAgreed] = useState(false)
   const [errors, setErrors] = useState({})
@@ -46,49 +78,25 @@ function Step1({ data, onChange, onNext }) {
     return Object.keys(e).length === 0
   }
 
-  const Field = ({ label, name, type = 'text', placeholder = '' }) => (
-    <div>
-      <label className="text-sm text-gray-300 font-medium mb-1.5 block">{label}</label>
-      <input type={type} value={data[name] || ''}
-        onChange={e => { onChange(name, e.target.value); setErrors(p => ({ ...p, [name]: '' })) }}
-        placeholder={placeholder}
-        className={`input-field ${errors[name] ? 'border-red-500/60' : ''}`}
-      />
-      {errors[name] && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12}/>{errors[name]}</p>}
-    </div>
-  )
-
-  const Select = ({ label, name, options }) => (
-    <div className="relative">
-      <label className="text-sm text-gray-300 font-medium mb-1.5 block">{label}</label>
-      <div className="relative">
-        <select value={data[name] || ''}
-          onChange={e => { onChange(name, e.target.value); setErrors(p => ({ ...p, [name]: '' })) }}
-          className={`select-field pr-10 ${errors[name] ? 'border-red-500/60' : ''} ${!data[name] ? 'text-gray-500' : 'text-white'}`}
-        >
-          <option value="" disabled>Select...</option>
-          {options.map(o => <option key={o} value={o} className="bg-night-800 text-white">{o}</option>)}
-        </select>
-        <ChevronRight size={14} className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-gray-500 pointer-events-none" />
-      </div>
-      {errors[name] && <p className="text-red-400 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12}/>{errors[name]}</p>}
-    </div>
-  )
+  const handleChange = useCallback((name, value) => {
+    onChange(name, value)
+    setErrors(p => ({ ...p, [name]: '' }))
+  }, [onChange])
 
   return (
     <div>
       <h2 className="font-playfair text-2xl font-bold text-white mb-1">Personal Information</h2>
       <p className="text-gray-400 text-sm mb-8">Please fill in your details accurately to process your grant application.</p>
       <div className="grid md:grid-cols-2 gap-5">
-        <Field label="First Name *" name="firstName" placeholder="e.g. John" />
-        <Field label="Middle Name (Optional)" name="middleName" placeholder="e.g. Kamau" />
-        <Field label="Last Name *" name="lastName" placeholder="e.g. Otieno" />
-        <Select label="Sex *" name="sex" options={['Male','Female','Prefer not to say']} />
-        <Select label="Marital Status *" name="maritalStatus" options={['Single','Married','Divorced','Widowed','Separated']} />
-        <Field label="Phone Number *" name="phone" type="tel" placeholder="e.g. 0712345678" />
-        <Field label="National ID Number *" name="idNumber" placeholder="e.g. 12345678" />
-        <Select label="Occupation *" name="occupation" options={OCCUPATIONS} />
-        <Select label="County *" name="county" options={COUNTIES} />
+        <InputField label="First Name *" name="firstName" placeholder="e.g. John" value={data.firstName || ''} onChange={handleChange} error={errors.firstName} />
+        <InputField label="Middle Name (Optional)" name="middleName" placeholder="e.g. Kamau" value={data.middleName || ''} onChange={handleChange} error={errors.middleName} />
+        <InputField label="Last Name *" name="lastName" placeholder="e.g. Otieno" value={data.lastName || ''} onChange={handleChange} error={errors.lastName} />
+        <SelectField label="Sex *" name="sex" options={['Male','Female','Prefer not to say']} value={data.sex || ''} onChange={handleChange} error={errors.sex} />
+        <SelectField label="Marital Status *" name="maritalStatus" options={['Single','Married','Divorced','Widowed','Separated']} value={data.maritalStatus || ''} onChange={handleChange} error={errors.maritalStatus} />
+        <InputField label="Phone Number *" name="phone" type="tel" placeholder="e.g. 0712345678" value={data.phone || ''} onChange={handleChange} error={errors.phone} />
+        <InputField label="National ID Number *" name="idNumber" placeholder="e.g. 12345678" value={data.idNumber || ''} onChange={handleChange} error={errors.idNumber} />
+        <SelectField label="Occupation *" name="occupation" options={OCCUPATIONS} value={data.occupation || ''} onChange={handleChange} error={errors.occupation} />
+        <SelectField label="County *" name="county" options={COUNTIES} value={data.county || ''} onChange={handleChange} error={errors.county} />
       </div>
       <div className={`mt-6 p-4 rounded-xl border ${errors.agreed ? 'border-red-500/50 bg-red-500/5' : 'border-night-600 bg-night-800'}`}>
         <label className="flex items-start gap-3 cursor-pointer">
@@ -341,7 +349,7 @@ function Step5({ data }) {
 export default function Apply() {
   const [step, setStep] = useState(0)
   const [formData, setFormData] = useState({})
-  const update = (key, value) => setFormData(p => ({ ...p, [key]: value }))
+  const update = useCallback((key, value) => setFormData(p => ({ ...p, [key]: value })), [])
   const next = () => setStep(s => Math.min(s + 1, 4))
   const back = () => setStep(s => Math.max(s - 1, 0))
   return (

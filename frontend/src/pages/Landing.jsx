@@ -97,11 +97,7 @@ export default function Landing() {
             </div>
             <div className="relative fade-in-up">
               <div className="relative rounded-2xl overflow-hidden border border-night-600 bg-night-800 aspect-[4/3] flex flex-col items-center justify-center gap-3">
-                <div className="w-16 h-16 rounded-full bg-emerald-glow border-2 border-dashed border-emerald-border flex items-center justify-center">
-                  <TrendingUp size={28} className="text-emerald-primary" />
-                </div>
-                <p className="text-gray-500 text-sm font-medium">Hero Image Goes Here</p>
-                <p className="text-gray-600 text-xs px-8 text-center">Replace with a real photo of a smiling Kenyan family or entrepreneur</p>
+                <img src="https://i.postimg.cc/NMTXqPp1/IMG-20260830-WA0008-(1).jpg" alt="Nyota Funds Kenya" className="w-full h-full object-cover absolute inset-0" />
                 <div className="absolute top-3 left-3 w-6 h-6 border-l-2 border-t-2 border-emerald-primary/40 rounded-tl" />
                 <div className="absolute top-3 right-3 w-6 h-6 border-r-2 border-t-2 border-emerald-primary/40 rounded-tr" />
                 <div className="absolute bottom-3 left-3 w-6 h-6 border-l-2 border-b-2 border-emerald-primary/40 rounded-bl" />

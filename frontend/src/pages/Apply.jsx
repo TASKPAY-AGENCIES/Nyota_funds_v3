@@ -294,8 +294,7 @@ function Step4({ data, onChange, onNext, onBack }) {
           </p>
         </div>
       </div>
-      <div className="mt-8 flex justify-between">
-        <button onClick={onBack} disabled={loading} className="btn-outline flex items-center gap-2 px-6 py-3"><ChevronLeft size={18} /> Back</button>
+      <div className="mt-8 flex flex-col gap-3">
         <button onClick={handlePay} disabled={loading} className="btn-primary flex items-center gap-2 px-6 py-4 text-base disabled:opacity-60 whitespace-nowrap">
           {loading ? <><Loader2 size={18} className="animate-spin" /> Sending...</> : <><Phone size={18} /> Send Payment Request</>}
         </button>
